@@ -1,6 +1,8 @@
 import json
 import requests
 import datetime
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 
 with open("config.json", "r") as f:
     config = json.load(f)
@@ -52,14 +54,10 @@ def convert_to_ics(calendar):
     ics_data += "END:VCALENDAR"
     return ics_data
 
-def save_ics(ics_data):
-    with open("calendar.ics", "w") as f:
-        f.write(ics_data)
+app = FastAPI()
 
-def main():
+@app.get("/calendar.ics")
+def read_ics():
     calendar = get_calendar(CALENDER_ID, signup())
     ics_data = convert_to_ics(calendar)
-    save_ics(ics_data)
-
-if __name__ == "__main__":
-    main()
+    return StreamingResponse(content=ics_data, media_type="text/calendar")
