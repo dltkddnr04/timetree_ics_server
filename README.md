@@ -12,6 +12,11 @@
 - **_session_id**의 유효시간은 명확하지 않습니다.
 
 ## 사용법
+0. git clone
+```bash
+git clone https://github.com/dltkddnr04/timetree_ics_server
+cd timetree_ics_server
+```
 1. python 설치
 ```bash
 sudo apt install python3 python3-pip
