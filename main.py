@@ -82,11 +82,10 @@ def convert_to_ics(calendar_data, calender_name="TimeTree"):
     ics_data = f"BEGIN:VCALENDAR\nVERSION:2.0\nX-WR-CALNAME:{calender_name}\nX-WR-TIMEZONE:Asia/Seoul\n"
     for event in calendar_data['events']:
         title = event['title']
-        # start_at = datetime.datetime.fromtimestamp(event['start_at'] / 1000).strftime("%Y%m%dT%H%M%S")
-        # end_at = datetime.datetime.fromtimestamp(event['end_at'] / 1000).strftime("%Y%m%dT%H%M%S")
-        # actually, it is UTC+0 so we need to convert it to Asia/Seoul
-        start_at = datetime.datetime.strptime(start_at, "%Y%m%dT%H%M%S").astimezone(datetime.timezone.utc).astimezone(datetime.timezone(datetime.timedelta(hours=TIMEZONE))).strftime("%Y%m%dT%H%M%S")
-        end_at = datetime.datetime.strptime(end_at, "%Y%m%dT%H%M%S").astimezone(datetime.timezone.utc).astimezone(datetime.timezone(datetime.timedelta(hours=TIMEZONE))).strftime("%Y%m%dT%H%M%S")
+        start_at = datetime.datetime.fromtimestamp(event['start_at'] / 1000).strftime("%Y%m%dT%H%M%S")
+        end_at = datetime.datetime.fromtimestamp(event['end_at'] / 1000).strftime("%Y%m%dT%H%M%S")
+        start_at = (datetime.datetime.strptime(start_at, "%Y%m%dT%H%M%S") + datetime.timedelta(hours=TIMEZONE)).strftime("%Y%m%dT%H%M%S")
+        end_at = (datetime.datetime.strptime(end_at, "%Y%m%dT%H%M%S") + datetime.timedelta(hours=TIMEZONE)).strftime("%Y%m%dT%H%M%S")
         if title != "":
             ics_data += f"BEGIN:VEVENT\nDTSTART;TZID=Asia/Seoul:{start_at}\nDTEND;TZID=Asia/Seoul:{end_at}\nSUMMARY:{title}\nEND:VEVENT\n"
     ics_data += "END:VCALENDAR"
