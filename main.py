@@ -96,16 +96,13 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return "Hello, World!"
-
-@app.get("/list")
-def read_list():
     # return calender_list
     calender_list = get_calender_list(session_id)
-    # remove id from calender_list
-    for key in calender_list:
-        calender_list[key] = calender_list[key][1]
-    return calender_list
+    list_data = "<ul>"
+    for alias_code in calender_list:
+        list_data += f"<li><a href=\"{alias_code}.ics\">{calender_list[alias_code][1]}</a></li>"
+    list_data += "</ul>"
+    return Response(content=list_data, media_type="text/html")
 
 @app.get("/{ALIAS_CODE}.ics")
 def read_ics(ALIAS_CODE: str):
