@@ -81,10 +81,11 @@ def convert_to_ics(calendar_data, calender_name="TimeTree"):
     ics_data = f"BEGIN:VCALENDAR\nVERSION:2.0\nX-WR-CALNAME:{calender_name}\nX-WR-TIMEZONE:Asia/Seoul\n"
     for event in calendar_data['events']:
         title = event['title']
+        note = event['note']
+        location = event['location']
+        url = event['url']
         start_timezone = event['start_timezone']
         end_timezone = event['end_timezone']
-        print(start_timezone)
-        print(end_timezone)
         start_timezone_offset = datetime.datetime.now(pytz.timezone(start_timezone)).utcoffset().total_seconds()
         end_timezone_offset = datetime.datetime.now(pytz.timezone(end_timezone)).utcoffset().total_seconds()
         start_timezone_offset = 9 * 3600
@@ -93,12 +94,12 @@ def convert_to_ics(calendar_data, calender_name="TimeTree"):
         end_at = datetime.datetime.fromtimestamp(event['end_at'] / 1000).astimezone(datetime.timezone(datetime.timedelta(seconds=int(end_timezone_offset)))).strftime("%Y%m%dT%H%M%S")
         if title != "":
             ics_data += f"""BEGIN:VEVENT\n
-                            SUMMARY:{title}\n
-                            DESCRIPTION:{event['note']}\n
+                            SUMMARY:{title if title != "" else "No Title"}\n
+                            DESCRIPTION:{note if note != None else ""}\n
                             DTSTART;TZID={start_timezone}:{start_at}\n
                             DTEND;TZID={end_timezone}:{end_at}\n
-                            LOCATION:{event['location']}\n
-                            URL;VALUE=URI:{event['url']}\n
+                            LOCATION:{location if location != None else ""}\n
+                            URL;VALUE=URI:{url if url != None else ""}\n
                             END:VEVENT\n"""
     ics_data += "END:VCALENDAR"
     return ics_data
