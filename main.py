@@ -1,10 +1,9 @@
 import json
 import requests
 import datetime
+import pytz
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse, Response
-
-TIMEZONE = 9
 
 with open("config.json", "r") as f:
     config = json.load(f)
@@ -82,12 +81,25 @@ def convert_to_ics(calendar_data, calender_name="TimeTree"):
     ics_data = f"BEGIN:VCALENDAR\nVERSION:2.0\nX-WR-CALNAME:{calender_name}\nX-WR-TIMEZONE:Asia/Seoul\n"
     for event in calendar_data['events']:
         title = event['title']
-        start_at = datetime.datetime.fromtimestamp(event['start_at'] / 1000).strftime("%Y%m%dT%H%M%S")
-        end_at = datetime.datetime.fromtimestamp(event['end_at'] / 1000).strftime("%Y%m%dT%H%M%S")
-        start_at = (datetime.datetime.strptime(start_at, "%Y%m%dT%H%M%S") + datetime.timedelta(hours=TIMEZONE)).strftime("%Y%m%dT%H%M%S")
-        end_at = (datetime.datetime.strptime(end_at, "%Y%m%dT%H%M%S") + datetime.timedelta(hours=TIMEZONE)).strftime("%Y%m%dT%H%M%S")
+        start_timezone = event['start_timezone']
+        end_timezone = event['end_timezone']
+        print(start_timezone)
+        print(end_timezone)
+        start_timezone_offset = datetime.datetime.now(pytz.timezone(start_timezone)).utcoffset().total_seconds()
+        end_timezone_offset = datetime.datetime.now(pytz.timezone(end_timezone)).utcoffset().total_seconds()
+        start_timezone_offset = 9 * 3600
+        end_timezone_offset = 9 * 3600
+        start_at = datetime.datetime.fromtimestamp(event['start_at'] / 1000).astimezone(datetime.timezone(datetime.timedelta(seconds=int(start_timezone_offset)))).strftime("%Y%m%dT%H%M%S")
+        end_at = datetime.datetime.fromtimestamp(event['end_at'] / 1000).astimezone(datetime.timezone(datetime.timedelta(seconds=int(end_timezone_offset)))).strftime("%Y%m%dT%H%M%S")
         if title != "":
-            ics_data += f"BEGIN:VEVENT\nDTSTART;TZID=Asia/Seoul:{start_at}\nDTEND;TZID=Asia/Seoul:{end_at}\nSUMMARY:{title}\nEND:VEVENT\n"
+            ics_data += f"""BEGIN:VEVENT\n
+                            SUMMARY:{title}\n
+                            DESCRIPTION:{event['note']}\n
+                            DTSTART;TZID={start_timezone}:{start_at}\n
+                            DTEND;TZID={end_timezone}:{end_at}\n
+                            LOCATION:{event['location']}\n
+                            URL;VALUE=URI:{event['url']}\n
+                            END:VEVENT\n"""
     ics_data += "END:VCALENDAR"
     return ics_data
 
