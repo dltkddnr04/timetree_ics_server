@@ -5,10 +5,10 @@
 - TimeTree API는 공식적으로 제공되지 않습니다.
 - 해당 프로젝트의 코드는 웹버전을 기반으로 작성되었습니다.
 - 모든 요청은 **X-TimeTreeA** 헤더를 필요로 하며, **web/2.1.0/ko**를 값으로 가집니다.
-- https://timetreeapp.com/api/v1/auth/email/signin을 통해 로그인을 할 수 있습니다.
+- [https://timetreeapp.com/api/v1/auth/email/signin](https://timetreeapp.com/api/v1/auth/email/signin)을 통해 로그인을 할 수 있습니다.
     - **uid**(이메일), **password**, **uuid**(임의의 UUID)를 요청 바디에 담아 요청을 보내야 합니다.
     - 로그인 후 반환되는 **_session_id**를 쿠키에 추가하여 요청을 보내야 합니다.
-- https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync를 통해 캘린더 이벤트를 가져올 수 있습니다.
+- [https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync](https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync)를 통해 캘린더 이벤트를 가져올 수 있습니다.
 - **_session_id**의 유효시간은 명확하지 않습니다.
 
 ## 사용법
